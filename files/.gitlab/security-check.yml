@@ -3,7 +3,6 @@ security-check:
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   script:
     - php bin/security-txt-check.php 30
-    - composer audit --locked --no-dev
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

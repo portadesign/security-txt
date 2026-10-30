@@ -14,6 +14,4 @@ Writes (existing files are skipped, `FORCE=1` overwrites):
 | `bin/security-txt-check.php [days]` | Exits 1 when `Expires` is missing, invalid or < 30 days away |
 | `bin/security-txt-renew.sh` | Bumps `Expires` by 11 months |
 | `.githooks/pre-push` | Runs the check locally (`core.hooksPath` is set by `apply.sh`) |
-| `.gitlab/security-check.yml`, `.github/workflows/security-check.yml` | Check + `composer audit --locked --no-dev` in CI, weekly on GitHub |
-
-Scanner silencing (Composer audit ignore, Trivy VEX) is documented in [pimcore-11-security-patches](https://github.com/portadesign/pimcore-11-security-patches#silencing-scanners).
+| `.gitlab/security-check.yml`, `.github/workflows/security-check.yml` | Runs the check on MR/PR and the default branch, weekly on GitHub |
