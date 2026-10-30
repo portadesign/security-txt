@@ -22,10 +22,6 @@ git -C "$TARGET" config core.hooksPath .githooks
 cat <<MSG
 
 Next in $TARGET:
-  1. composer require portadesign/pimcore-11-security-patches:^1.0   (repositories.vcs https://github.com/portadesign/pimcore-11-security-patches)
-  2. merge vendor/portadesign/pimcore-11-security-patches/audit-ignore.json into composer.json config
-  3. replace secrets in var/config/**/*.yaml with %env(NAME)%, values to .env.local
-  4. include .gitlab/security-check.yml in .gitlab-ci.yml (GitHub: workflow already in place)
-  5. .dockerignore: .env.local, .env.*.local, /var/cache
-  6. bin/console cache:clear && php bin/security-txt-check.php
+  1. include .gitlab/security-check.yml in .gitlab-ci.yml (GitHub: workflow already in place)
+  2. php bin/security-txt-check.php
 MSG
