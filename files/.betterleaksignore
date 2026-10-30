@@ -1,0 +1,2 @@
+# One SHA-256 of the exact secret value per line (printf '%s' 'VALUE' | shasum -a 256).
+# Only for sample values that must stay in Git (.env placeholders, *.example files).

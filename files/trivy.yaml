@@ -1,0 +1,4 @@
+ignorefile: .trivyignore.yaml
+vulnerability:
+  vex:
+    - vendor/portadesign/pimcore-11-security-patches/vex.openvex.json
