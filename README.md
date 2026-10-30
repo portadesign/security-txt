@@ -1,6 +1,6 @@
-# pimcore-security-template
+# security-template
 
-security.txt (RFC 9116) with expiry checks for portadesign Pimcore projects.
+security.txt (RFC 9116) with expiry checks for PORTA DESIGN projects (Pimcore, Symfony, anything with a web root in `public/`).
 
 ```sh
 ./apply.sh ../my-project pim.example.com
