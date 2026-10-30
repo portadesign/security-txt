@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-cd "$(git rev-parse --show-toplevel)"
-if command -v php >/dev/null 2>&1; then
-    php bin/security-txt-check.php 30
-else
-    docker compose exec -T app php bin/security-txt-check.php 30
-fi

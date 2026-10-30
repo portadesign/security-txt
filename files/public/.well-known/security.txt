@@ -1,4 +1,0 @@
-Contact: mailto:security@portadesign.cz
-Expires: __EXPIRES__
-Preferred-Languages: cs, en
-Canonical: https://__HOST__/.well-known/security.txt

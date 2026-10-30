@@ -1,0 +1,24 @@
+{
+  "name": "portadesign/security-txt",
+  "description": "Create, check and renew a RFC 9116 security.txt from Composer: vendor/bin/security-txt init|check|renew|hook",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "PORTA DESIGN",
+      "email": "development@portadesign.cz",
+      "homepage": "https://portadesign.cz"
+    }
+  ],
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Portadesign\\SecurityTxt\\": "src/"
+    }
+  },
+  "bin": [
+    "bin/security-txt"
+  ]
+}

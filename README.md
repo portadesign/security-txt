@@ -1,17 +1,29 @@
-# security-template
+# security-txt
 
-security.txt (RFC 9116) with expiry checks for PORTA DESIGN projects (Pimcore, Symfony, anything with a web root in `public/`).
+Create, check and renew a [RFC 9116](https://www.rfc-editor.org/rfc/rfc9116) `security.txt` from Composer. Public GitHub repository, not on Packagist. PHP ≥ 8.1, no dependencies.
 
-```sh
-./apply.sh ../my-project pim.example.com
+## Install
+
+```bash
+composer config repositories.security-txt vcs https://github.com/portadesign/security-txt
+composer require --dev portadesign/security-txt
+vendor/bin/security-txt init pim.example.com
+vendor/bin/security-txt hook
 ```
 
-Writes (existing files are skipped, `FORCE=1` overwrites):
+`init` writes `public/.well-known/security.txt` with `Contact: mailto:security@portadesign.cz`, `Expires` on the first day of the month 11 months ahead, `Preferred-Languages: cs, en` and `Canonical: https://<host>/.well-known/security.txt`. `hook` installs `.githooks/pre-push` running the check and sets `core.hooksPath`. Commit both.
 
-| File | Purpose |
+## Commands
+
+| Command | Does |
 | --- | --- |
-| `public/.well-known/security.txt` | Contact security@portadesign.cz, `Expires` set to +11 months, `Canonical` with the given host |
-| `bin/security-txt-check.php [days]` | Exits 1 when `Expires` is missing, invalid or < 30 days away |
-| `bin/security-txt-renew.sh` | Bumps `Expires` by 11 months |
-| `.githooks/pre-push` | Runs the check locally (`core.hooksPath` is set by `apply.sh`) |
-| `.gitlab/security-check.yml`, `.github/workflows/security-check.yml` | Runs the check on MR/PR and the default branch, weekly on GitHub |
+| `init <host> [--contact=] [--languages=] [--force]` | Create the file; refuses to overwrite without `--force` |
+| `check [--min-days=30]` | Exit 1 when `Expires` is missing, invalid or closer than 30 days |
+| `renew` | Move `Expires` 11 months ahead; commit the result |
+| `hook` | Install the pre-push hook |
+
+`--file=path` changes the location for any command (default `public/.well-known/security.txt`).
+
+## CI
+
+Copy [`ci/gitlab.yml`](ci/gitlab.yml) into `.gitlab-ci.yml` or [`ci/github.yml`](ci/github.yml) into `.github/workflows/`. Both run `vendor/bin/security-txt check` on merge requests and the default branch; GitHub also every Monday, so an expiring file fails before anyone pushes.

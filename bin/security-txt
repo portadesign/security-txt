@@ -1,0 +1,99 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require __DIR__ . '/../src/SecurityTxt.php';
+
+$arguments = array_slice($argv, 1);
+$options = [];
+$positional = [];
+
+foreach ($arguments as $argument) {
+    if (preg_match('/^--([a-z-]+)(?:=(.*))?$/', $argument, $match)) {
+        $options[$match[1]] = $match[2] ?? true;
+
+        continue;
+    }
+
+    $positional[] = $argument;
+}
+
+$command = $positional[0] ?? 'help';
+$file = is_string($options['file'] ?? null) ? $options['file'] : \Portadesign\SecurityTxt\SecurityTxt::DEFAULT_FILE;
+$securityTxt = new \Portadesign\SecurityTxt\SecurityTxt($file);
+
+$usage = <<<TXT
+security-txt init <host> [--contact=mailto:...] [--languages="cs, en"] [--force]
+security-txt check [--min-days=30]
+security-txt renew
+security-txt hook
+Options for every command: --file=public/.well-known/security.txt
+TXT;
+
+try {
+    switch ($command) {
+        case 'init':
+            $host = $positional[1] ?? null;
+
+            if (!is_string($host) || '' === $host) {
+                throw new \RuntimeException("init needs the public host, e.g. security-txt init pim.example.com");
+            }
+
+            echo $securityTxt->create(
+                $host,
+                is_string($options['contact'] ?? null) ? $options['contact'] : \Portadesign\SecurityTxt\SecurityTxt::DEFAULT_CONTACT,
+                is_string($options['languages'] ?? null) ? $options['languages'] : \Portadesign\SecurityTxt\SecurityTxt::DEFAULT_LANGUAGES,
+                isset($options['force']),
+            );
+
+            exit(0);
+
+        case 'check':
+            $minDays = (int) ($options['min-days'] ?? 30);
+            $days = $securityTxt->daysUntilExpiry();
+
+            if ($days < $minDays) {
+                fwrite(STDERR, sprintf("security.txt expires in %d day(s); run: vendor/bin/security-txt renew\n", $days));
+
+                exit(1);
+            }
+
+            echo sprintf("security.txt ok, expires in %d day(s)\n", $days);
+
+            exit(0);
+
+        case 'renew':
+            echo 'Expires: ' . $securityTxt->renew() . "\n";
+
+            exit(0);
+
+        case 'hook':
+            $hooks = '.githooks';
+
+            if (!is_dir($hooks) && !mkdir($hooks, 0775, true)) {
+                throw new \RuntimeException('cannot create .githooks');
+            }
+
+            file_put_contents($hooks . '/pre-push', "#!/usr/bin/env sh\ncd \"\$(git rev-parse --show-toplevel)\"\nvendor/bin/security-txt check\n");
+            chmod($hooks . '/pre-push', 0755);
+            passthru('git config core.hooksPath ' . escapeshellarg($hooks), $status);
+
+            if (0 !== $status) {
+                throw new \RuntimeException('git config core.hooksPath failed');
+            }
+
+            echo ".githooks/pre-push installed, core.hooksPath set\n";
+
+            exit(0);
+
+        default:
+            echo $usage . "\n";
+
+            exit('help' === $command ? 0 : 1);
+    }
+} catch (\RuntimeException $exception) {
+    fwrite(STDERR, $exception->getMessage() . "\n");
+
+    exit(1);
+}
