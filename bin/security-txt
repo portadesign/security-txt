@@ -24,6 +24,8 @@ $file = is_string($options['file'] ?? null) ? $options['file'] : \Portadesign\Se
 $securityTxt = new \Portadesign\SecurityTxt\SecurityTxt($file);
 
 $usage = <<<TXT
+Keeps public/.well-known/security.txt (RFC 9116: where to report a vulnerability) valid.
+
 security-txt init <host> [--contact=mailto:...] [--languages="cs, en"] [--force]
 security-txt check [--min-days=30]
 security-txt renew
@@ -54,7 +56,24 @@ try {
             $days = $securityTxt->daysUntilExpiry();
 
             if ($days < $minDays) {
-                fwrite(STDERR, sprintf("security.txt expires in %d day(s); run: vendor/bin/security-txt renew\n", $days));
+                fwrite(STDERR, sprintf(<<<'TXT'
+security.txt expires in %d day(s), limit is %d.
+
+What this is: public/.well-known/security.txt (RFC 9116) tells security
+researchers where to report a vulnerability in this site. The file carries
+an Expires date; once it passes, researchers treat the contact as stale and
+scanners flag the site. Renewing moves the date 11 months ahead, nothing else.
+
+What to do (2 minutes):
+  vendor/bin/security-txt renew
+  git add public/.well-known/security.txt
+  git commit -m "chore: renew security.txt"
+  then push again.
+
+Why it blocks you: expiry is a hard date, nobody gets reminded otherwise.
+Details: https://github.com/portadesign/security-txt
+
+TXT, $days, $minDays));
 
                 exit(1);
             }
