@@ -9,7 +9,7 @@ Create, check and renew a [RFC 9116](https://www.rfc-editor.org/rfc/rfc9116) `se
 ## When the check fails
 
 ```
-security.txt expires in 7 day(s), limit is 30.
+security.txt expires in 7 day(s).
 ```
 
 Run `vendor/bin/security-txt renew`, commit `public/.well-known/security.txt`, push again. Nothing else changes; `renew` only moves `Expires` 11 months ahead.

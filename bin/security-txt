@@ -57,7 +57,7 @@ try {
 
             if ($days < $minDays) {
                 fwrite(STDERR, sprintf(<<<'TXT'
-security.txt expires in %d day(s), limit is %d.
+security.txt expires in %d day(s).
 
 What this is: public/.well-known/security.txt (RFC 9116) tells security
 researchers where to report a vulnerability in this site. The file carries
@@ -73,7 +73,7 @@ What to do (2 minutes):
 Why it blocks you: expiry is a hard date, nobody gets reminded otherwise.
 Details: https://github.com/portadesign/security-txt
 
-TXT, $days, $minDays));
+TXT, $days));
 
                 exit(1);
             }
